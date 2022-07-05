@@ -27,20 +27,21 @@ public class MultinomialEvaluation {
         return scale;
     }
 
-    private final ClassificationEvaluation [] evaluations;
+    ClassificationEvaluation [] evaluations;
     public MultinomialEvaluation(ClassificationEvaluation [] evaluations){
+        this.evaluations = evaluations;
+    }
+    public MultinomialEvaluation(){
+
+    }
+
+    public void setEvaluations(ClassificationEvaluation[] evaluations) {
         this.evaluations = evaluations;
     }
 
     public ClassificationEvaluation[] getEvaluations() {
         return evaluations;
     }
-
-    ClassificationEvaluation sumEvaluation = null;
-    public void init(){
-        sumEvaluation = null;
-    }
-
 
     public String getId() {
         return id;
@@ -143,11 +144,11 @@ public class MultinomialEvaluation {
 
     @Override
     public String toString(){
-        return new GsonBuilder().setPrettyPrinting().create().toJson(toJson());
+        return new GsonBuilder().setPrettyPrinting().create().toJson(toJsonObject());
     }
 
 
-    public JsonObject toJson(){
+    public JsonObject toJsonObject(){
         JsonObject jsonObject = new JsonObject();
         if(id != null){
             jsonObject.addProperty("id",id);
@@ -173,7 +174,7 @@ public class MultinomialEvaluation {
 
         JsonArray array = new JsonArray();
         for(ClassificationEvaluation evaluation :evaluations){
-            array.add(evaluation.toJson());
+            array.add(evaluation.toJsonObject());
         }
 
         jsonObject.add("evaluations", array);

@@ -1,10 +1,10 @@
 # classification
 - 분류 프로젝트
 - 분류는 오픈된 내용이 많으므로 대부분은 활용하고 사용하기 편한부분만 개발
-
+- 분류는 납품용 프로젝트 개발에도 많이 사용되므로 금융권에 허가되는 open jdk 8 버전으로 개발
 
 # 개발환경
-- open jdk 17
+- open jdk 8
 
 # communication
 ### blog, homepage
