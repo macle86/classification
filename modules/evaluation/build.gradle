@@ -1,0 +1,19 @@
+plugins {
+    id 'java'
+}
+
+group 'io.runon.classification'
+version '0.0.1'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+
+    implementation group: 'com.google.code.gson', name: 'gson', version: '2.9.0'
+}
+
+test {
+    useJUnitPlatform()
+}

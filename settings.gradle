@@ -1,0 +1,4 @@
+rootProject.name = 'classification'
+include 'modules:evaluation'
+findProject(':modules:evaluation')?.name = 'evaluation'
+
