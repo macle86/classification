@@ -96,38 +96,44 @@ public class ClassificationEvaluation {
         return fp;
     }
 
-    public void plusTruePositive(){
+    public void addTruePositive(){
         tp++;
     }
 
-    public void plusTrueNegative(){
+    public void addTrueNegative(){
         tn++;
     }
 
-    public void plusFalseNegative(){
+    public void addFalseNegative(){
         fn++;
     }
 
-    public void plusFalsePositive(){
+    public void addFalsePositive(){
         fp++;
     }
 
-    public void plusTruePositive(long tp){
+    public void addTruePositive(long tp){
         this.tp += tp;
     }
 
-    public void plusTrueNegative(long tn){
+    public void addTrueNegative(long tn){
         this.tn += tn;
     }
 
-    public void plusFalseNegative(long fn){
+    public void addFalseNegative(long fn){
         this.fn += fn;
     }
 
-    public void plusFalsePositive(long fp){
+    public void addFalsePositive(long fp){
         this.fp += fp;
     }
 
+    public void add(ClassificationEvaluation evaluation){
+        this.tp += evaluation.tp;
+        this.tn += evaluation.tn;
+        this.fn += evaluation.fn;
+        this.fp += evaluation.fp;
+    }
 
     /**
      * Accuracy : 정확도, 제대로 분류된 데이터의 비Error Rate : 오류율, 잘못 분류한 데이터의 비율
@@ -195,10 +201,10 @@ public class ClassificationEvaluation {
 
     @Override
     public String toString(){
-        return new GsonBuilder().setPrettyPrinting().create().toJson(toJson());
+        return new GsonBuilder().setPrettyPrinting().create().toJson(toJsonObject());
     }
 
-    public JsonObject toJson(){
+    public JsonObject toJsonObject(){
         JsonObject jsonObject = new JsonObject();
         if(id != null){
             jsonObject.addProperty("id",id);

@@ -4,7 +4,7 @@
 
 
 # 개발환경
-- open jdk 17
+- open jdk 8
 
 # communication
 ### blog, homepage
