@@ -29,6 +29,14 @@ public class ClassificationEvaluation {
 
     int scale = 4;
 
+    public int getScale() {
+        return scale;
+    }
+
+    public void setScale(int scale) {
+        this.scale = scale;
+    }
+
     public ClassificationEvaluation(){
         init();
     }
@@ -217,6 +225,13 @@ public class ClassificationEvaluation {
             jsonObject.addProperty("name", name);
         }
 
+        setJsonObject(jsonObject);
+        return jsonObject;
+    }
+
+    public void setJsonObject(JsonObject jsonObject ){
+
+        jsonObject.addProperty("length", length());
         jsonObject.addProperty("accuracy", accuracy());
         jsonObject.addProperty("f1_score", f1Score());
         jsonObject.addProperty("geometric_mean", geometricMean());
@@ -229,7 +244,5 @@ public class ClassificationEvaluation {
         jsonObject.addProperty("tn", tn);
         jsonObject.addProperty("fn", fn);
         jsonObject.addProperty("fp", fp);
-        return jsonObject;
     }
-
 }

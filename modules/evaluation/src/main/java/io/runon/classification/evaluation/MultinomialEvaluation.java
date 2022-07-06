@@ -7,8 +7,6 @@ import com.google.gson.JsonObject;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * 다항분류 평가
@@ -21,10 +19,18 @@ public class MultinomialEvaluation {
 
     int scale = 4;
 
+
     public int getScale() {
         return scale;
     }
 
+    public void setScale(int scale) {
+        this.scale = scale;
+
+        for(ClassificationEvaluation evaluation : evaluations){
+            evaluation.setScale(scale);
+        }
+    }
 
     long p = 0;
     long n = 0;
@@ -34,35 +40,9 @@ public class MultinomialEvaluation {
         this.evaluations = evaluations;
     }
 
-    private Map<String, ClassificationEvaluation> map = null;
-
-    /**
-     * 맵 구조 생성
-     * 모든 데이터에 아이디가 설정되어 있다는 전제가 있어야 한다
-     */
-    public void makeMap(){
-        if(map != null){
-            return;
-        }
-        map = new HashMap<>();
-        for(ClassificationEvaluation evaluation : evaluations){
-            map.put(evaluation.getId(), evaluation);
-        }
-
-    }
-
-    public ClassificationEvaluation getEvaluation(String id){
-        if(map == null){
-            makeMap();
-        }
-        return map.get(id);
-    }
-
     public ClassificationEvaluation[] getEvaluations() {
         return evaluations;
     }
-
-
 
     /**
      * 정보추가
@@ -111,7 +91,6 @@ public class MultinomialEvaluation {
     }
 
 
-
     public String getId() {
         return id;
     }
@@ -140,8 +119,7 @@ public class MultinomialEvaluation {
     }
 
     public BigDecimal f1Score(){
-        
-        //다시 작성하기
+
         BigDecimal precisionSum = BigDecimal.ZERO;
         BigDecimal recallSum = BigDecimal.ZERO;
 
@@ -186,11 +164,7 @@ public class MultinomialEvaluation {
         if(name != null){
             jsonObject.addProperty("name", name);
         }
-        jsonObject.addProperty("accuracy", accuracy());
-        jsonObject.addProperty("f1_score", f1Score());
-        jsonObject.addProperty("geometric_mean", geometricMean());
-        jsonObject.addProperty("p", getPositive());
-        jsonObject.addProperty("n", getNegative());
+        setJsonObject(jsonObject);
 
         JsonArray array = new JsonArray();
         for(ClassificationEvaluation evaluation :evaluations){
@@ -202,4 +176,14 @@ public class MultinomialEvaluation {
         return jsonObject;
     }
 
+
+
+    public void setJsonObject(JsonObject jsonObject ){
+        jsonObject.addProperty("length", length());
+        jsonObject.addProperty("accuracy", accuracy());
+        jsonObject.addProperty("f1_score", f1Score());
+        jsonObject.addProperty("geometric_mean", geometricMean());
+        jsonObject.addProperty("p", getPositive());
+        jsonObject.addProperty("n", getNegative());
+    }
 }

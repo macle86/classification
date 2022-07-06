@@ -20,8 +20,20 @@ public class TradingTestEvaluation extends MultinomialEvaluation{
         testEvaluation = new MultinomialEvaluation(copy(evaluations));
     }
 
-    private ClassificationEvaluation [] copy(ClassificationEvaluation [] evaluations){
+    @Override
+    public void setScale(int scale) {
+       super.setScale(scale);
+       tradingEvaluation.setScale(scale);
+       testEvaluation.setScale(scale);
+    }
 
+    private ClassificationEvaluation [] copy(ClassificationEvaluation [] evaluations){
+        ClassificationEvaluation [] copy = new ClassificationEvaluation[evaluations.length];
+        for (int i = 0; i <copy.length ; i++) {
+            copy[i] = new ClassificationEvaluation();
+            copy[i].setId(evaluations[i].getId());
+            copy[i].setName(evaluations[i].getName());
+        }
         return evaluations;
     }
 
@@ -47,7 +59,6 @@ public class TradingTestEvaluation extends MultinomialEvaluation{
         return new GsonBuilder().setPrettyPrinting().create().toJson(toJsonObject());
     }
 
-
     public JsonObject toJsonObject(){
         JsonObject jsonObject = new JsonObject();
         if(id != null){
@@ -62,23 +73,40 @@ public class TradingTestEvaluation extends MultinomialEvaluation{
         }
 
         if(testEvaluation.length() == 0){
-
+            return tradingEvaluation.toJsonObject();
+        }else if(tradingEvaluation.length() == 0){
+            return testEvaluation.toJsonObject();
         }
 
-
-
+        JsonObject total = new JsonObject();
+        setJsonObject(total);
+        jsonObject.add("total", total);
         JsonObject trading = new JsonObject();
-        trading.addProperty("accuracy", tradingEvaluation.accuracy());
-        trading.addProperty("f1_score", tradingEvaluation.f1Score());
-        trading.addProperty("geometric_mean", tradingEvaluation.geometricMean());
-        trading.addProperty("p", tradingEvaluation.getPositive());
-        trading.addProperty("n", tradingEvaluation.getNegative());
+        tradingEvaluation.setJsonObject(trading);
+        jsonObject.add("trading", trading);
+        JsonObject test = new JsonObject();
+        testEvaluation.setJsonObject(test);
+        jsonObject.add("test", test);
+
 
         JsonArray array = new JsonArray();
-        for(ClassificationEvaluation evaluation :evaluations){
-            array.add(evaluation.toJsonObject());
-        }
+        for (int i = 0; i <evaluations.length ; i++) {
+            JsonObject evaluation = new JsonObject();
+            JsonObject totalJson = new JsonObject();
+            evaluations[i].setJsonObject(total);
+            evaluation.add("total", totalJson);
 
+            JsonObject tradingJson = new JsonObject();
+            tradingEvaluation.evaluations[i].setJsonObject(tradingJson);
+            evaluation.add("trading", tradingJson);
+
+            JsonObject testJson = new JsonObject();
+            testEvaluation.evaluations[i].setJsonObject(testJson);
+            evaluation.add("test", testJson);
+
+
+            array.add(evaluation);
+        }
         jsonObject.add("evaluations", array);
 
         return jsonObject;
