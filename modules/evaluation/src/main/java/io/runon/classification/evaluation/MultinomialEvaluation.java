@@ -5,18 +5,16 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.math.RoundingMode;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 다항분류 평가
  * @author macle
  */
 public class MultinomialEvaluation {
-
-    public enum Mode{
-        SUM
-        , AVERAGE
-    }
 
     String id;
     String name;
@@ -27,21 +25,92 @@ public class MultinomialEvaluation {
         return scale;
     }
 
+
+    long p = 0;
+    long n = 0;
+
     ClassificationEvaluation [] evaluations;
     public MultinomialEvaluation(ClassificationEvaluation [] evaluations){
         this.evaluations = evaluations;
     }
-    public MultinomialEvaluation(){
+
+    private Map<String, ClassificationEvaluation> map = null;
+
+    /**
+     * 맵 구조 생성
+     * 모든 데이터에 아이디가 설정되어 있다는 전제가 있어야 한다
+     */
+    public void makeMap(){
+        if(map != null){
+            return;
+        }
+        map = new HashMap<>();
+        for(ClassificationEvaluation evaluation : evaluations){
+            map.put(evaluation.getId(), evaluation);
+        }
 
     }
 
-    public void setEvaluations(ClassificationEvaluation[] evaluations) {
-        this.evaluations = evaluations;
+    public ClassificationEvaluation getEvaluation(String id){
+        if(map == null){
+            makeMap();
+        }
+        return map.get(id);
     }
 
     public ClassificationEvaluation[] getEvaluations() {
         return evaluations;
     }
+
+
+
+    /**
+     * 정보추가
+     * @param classificationId 분류아이디
+     * @param trueId 정답 아이디
+     */
+    public void add(String classificationId, String trueId ){
+//    TP (True Positive) : 참을 참이라고 한 횟수
+//    TN (True Negative) : 거짓을 거짓이라고 한 횟수
+//    FN (False Negative) : 참을 거짓이라고 한 횟수
+//    FP (False Positive) : 거짓을 참이라고 한 횟수
+        if(classificationId.equals(trueId)){
+            p++;
+            //정답일때
+            for(ClassificationEvaluation evaluation : evaluations){
+                if(evaluation.getId().equals(trueId)){
+                    evaluation.addTruePositive();
+                }else{
+                    evaluation.addTrueNegative();
+                }
+            }
+        }else{
+            n++;
+            for(ClassificationEvaluation evaluation : evaluations){
+                if(evaluation.getId().equals(trueId)){
+                    evaluation.addFalseNegative();
+                }else if(evaluation.getId().equals(classificationId)){
+                    evaluation.addFalsePositive();
+                }else{
+                    evaluation.addTrueNegative();
+                }
+            }
+        }
+    }
+
+    public long length(){
+        return p+n;
+    }
+
+    public long getPositive(){
+        return p;
+    }
+
+    public long getNegative(){
+        return n;
+    }
+
+
 
     public String getId() {
         return id;
@@ -59,87 +128,48 @@ public class MultinomialEvaluation {
         this.name = name;
     }
 
-    public long getTruePositive(){
-        long sum = 0;
+    public BigDecimal accuracy(){
+
+
+        BigDecimal sum = BigDecimal.ZERO;
         for(ClassificationEvaluation evaluation :evaluations){
-            sum+= evaluation.getTruePositive();
+            sum = sum.add(evaluation.accuracy());
         }
-        return sum;
+        return sum.divide(new BigDecimal(evaluations.length), scale,RoundingMode.HALF_UP);
+
     }
-    public long getTrueNegative(){
-        long sum = 0;
+
+    public BigDecimal f1Score(){
+        
+        //다시 작성하기
+        BigDecimal precisionSum = BigDecimal.ZERO;
+        BigDecimal recallSum = BigDecimal.ZERO;
+
         for(ClassificationEvaluation evaluation :evaluations){
-            sum+= evaluation.getTrueNegative();
+            precisionSum = precisionSum.add(new BigDecimal(evaluation.tp).divide(new BigDecimal(evaluation.tp+evaluation.fp), MathContext.DECIMAL128));
+            recallSum = recallSum.add(new BigDecimal(evaluation.tp).divide(new BigDecimal(evaluation.tp+evaluation.fn),scale, RoundingMode.HALF_UP));
         }
-        return sum;
+        BigDecimal length = new BigDecimal(evaluations.length);
+
+        //평균
+        BigDecimal precision = precisionSum.divide(length, MathContext.DECIMAL128);
+        BigDecimal recall = recallSum.divide(length, MathContext.DECIMAL128);
+
+        BigDecimal up = precision.multiply(recall);
+        BigDecimal down = precision.add(recall);
+
+        return new BigDecimal(2).multiply(up).divide(down, scale, RoundingMode.HALF_UP).stripTrailingZeros();
     }
-    public long getFalseNegative(){
-        long sum = 0;
+
+
+    public BigDecimal geometricMean(){
+    
+        BigDecimal sum = BigDecimal.ZERO;
         for(ClassificationEvaluation evaluation :evaluations){
-            sum+= evaluation.getFalseNegative();
+            sum = sum.add(evaluation.geometricMean());
         }
-        return sum;
-    }
-    public long getFalsePositive(){
-        long sum = 0;
-        for(ClassificationEvaluation evaluation :evaluations){
-            sum+= evaluation.getFalsePositive();
-        }
-        return sum;
-    }
-
-    public long getPositive(){
-        long sum = 0;
-        for(ClassificationEvaluation evaluation :evaluations){
-            sum+= evaluation.getPositive();
-        }
-        return sum;
-    }
-
-    public long getNegative(){
-        long sum = 0;
-        for(ClassificationEvaluation evaluation :evaluations){
-            sum+= evaluation.getNegative();
-        }
-        return sum;
-    }
-
-
-    public BigDecimal accuracy(Mode mode){
-        if(mode == Mode.AVERAGE){
-            BigDecimal sum = BigDecimal.ZERO;
-            for(ClassificationEvaluation evaluation :evaluations){
-                sum = sum.add(evaluation.accuracy());
-            }
-            return sum.divide(new BigDecimal(evaluations.length), scale,RoundingMode.HALF_UP);
-        }else{
-            return new ClassificationEvaluation(getTruePositive(), getTrueNegative() , getFalseNegative() , getFalsePositive()).accuracy();
-        }
-    }
-
-    public BigDecimal f1Score(Mode mode){
-        if(mode == Mode.AVERAGE){
-            BigDecimal sum = BigDecimal.ZERO;
-            for(ClassificationEvaluation evaluation :evaluations){
-                sum = sum.add(evaluation.f1Score());
-            }
-            return sum.divide(new BigDecimal(evaluations.length), scale,RoundingMode.HALF_UP);
-        }else{
-            return new ClassificationEvaluation(getTruePositive(), getTrueNegative() , getFalseNegative() , getFalsePositive()).f1Score();
-        }
-    }
-
-
-    public BigDecimal geometricMean(Mode mode){
-        if(mode == Mode.AVERAGE){
-            BigDecimal sum = BigDecimal.ZERO;
-            for(ClassificationEvaluation evaluation :evaluations){
-                sum = sum.add(evaluation.geometricMean());
-            }
-            return sum.divide(new BigDecimal(evaluations.length), scale,RoundingMode.HALF_UP);
-        }else{
-            return new ClassificationEvaluation(getTruePositive(), getTrueNegative() , getFalseNegative() , getFalsePositive()).geometricMean();
-        }
+        return sum.divide(new BigDecimal(evaluations.length), scale,RoundingMode.HALF_UP);
+        
     }
 
     @Override
@@ -156,21 +186,11 @@ public class MultinomialEvaluation {
         if(name != null){
             jsonObject.addProperty("name", name);
         }
-
-        jsonObject.addProperty("accuracy_average", accuracy(Mode.AVERAGE));
-        jsonObject.addProperty("accuracy_sum", accuracy(Mode.SUM));
-        jsonObject.addProperty("f1-score_average", f1Score(Mode.AVERAGE));
-        jsonObject.addProperty("f1-score_sum", f1Score(Mode.SUM));
-        jsonObject.addProperty("geometric_mean_average", geometricMean(Mode.AVERAGE));
-        jsonObject.addProperty("geometric_mean_average", geometricMean(Mode.SUM));
-
+        jsonObject.addProperty("accuracy", accuracy());
+        jsonObject.addProperty("f1_score", f1Score());
+        jsonObject.addProperty("geometric_mean", geometricMean());
         jsonObject.addProperty("p", getPositive());
         jsonObject.addProperty("n", getNegative());
-        jsonObject.addProperty("tp", getTruePositive());
-        jsonObject.addProperty("tn", getTrueNegative());
-        jsonObject.addProperty("fn", getFalseNegative());
-        jsonObject.addProperty("fp", getFalsePositive());
-
 
         JsonArray array = new JsonArray();
         for(ClassificationEvaluation evaluation :evaluations){

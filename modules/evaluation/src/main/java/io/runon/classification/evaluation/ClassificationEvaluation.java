@@ -199,6 +199,10 @@ public class ClassificationEvaluation {
         return fp + fn;
     }
 
+    public long length(){
+        return tp + tn + fp + fn;
+    }
+
     @Override
     public String toString(){
         return new GsonBuilder().setPrettyPrinting().create().toJson(toJsonObject());
