@@ -157,7 +157,7 @@ public class ClassificationEvaluation {
      * @return 0 ~ 1
      */
     public BigDecimal geometricMean(){
-       BigDecimal ttf = new BigDecimal(tp).divide(new BigDecimal(tn+fn), MathContext.DECIMAL128);
+       BigDecimal ttf = new BigDecimal(tp).divide(new BigDecimal(tp+fn), MathContext.DECIMAL128);
        BigDecimal tft = new BigDecimal(tn).divide(new BigDecimal(fp+tn), MathContext.DECIMAL128);
 
        //BigDecimal sqrt 가없는 java 8용 한국시장 남풉형 프로젝트에서는 아직 java 8 이 많이 사용됨
