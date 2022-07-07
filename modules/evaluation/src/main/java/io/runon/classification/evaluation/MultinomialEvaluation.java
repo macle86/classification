@@ -90,7 +90,6 @@ public class MultinomialEvaluation {
         return n;
     }
 
-
     public String getId() {
         return id;
     }
@@ -109,25 +108,34 @@ public class MultinomialEvaluation {
 
     public BigDecimal accuracy(){
 
+        int count = 0;
 
         BigDecimal sum = BigDecimal.ZERO;
         for(ClassificationEvaluation evaluation :evaluations){
+            if(evaluation.length() == 0){
+                continue;
+            }
+            count++;
             sum = sum.add(evaluation.accuracy());
         }
-        return sum.divide(new BigDecimal(evaluations.length), scale,RoundingMode.HALF_UP);
+        return sum.divide(new BigDecimal(count), scale,RoundingMode.HALF_UP);
 
     }
 
     public BigDecimal f1Score(){
-
+        int count = 0;
         BigDecimal precisionSum = BigDecimal.ZERO;
         BigDecimal recallSum = BigDecimal.ZERO;
 
         for(ClassificationEvaluation evaluation :evaluations){
+            if(evaluation.length() ==0){
+                continue;
+            }
+            count++;
             precisionSum = precisionSum.add(new BigDecimal(evaluation.tp).divide(new BigDecimal(evaluation.tp+evaluation.fp), MathContext.DECIMAL128));
             recallSum = recallSum.add(new BigDecimal(evaluation.tp).divide(new BigDecimal(evaluation.tp+evaluation.fn),scale, RoundingMode.HALF_UP));
         }
-        BigDecimal length = new BigDecimal(evaluations.length);
+        BigDecimal length = new BigDecimal(count);
 
         //평균
         BigDecimal precision = precisionSum.divide(length, MathContext.DECIMAL128);
@@ -141,12 +149,19 @@ public class MultinomialEvaluation {
 
 
     public BigDecimal geometricMean(){
-    
+
+        int count = 0;
+
         BigDecimal sum = BigDecimal.ZERO;
         for(ClassificationEvaluation evaluation :evaluations){
+            if(evaluation.length() ==0){
+                continue;
+            }
+
+            count++;
             sum = sum.add(evaluation.geometricMean());
         }
-        return sum.divide(new BigDecimal(evaluations.length), scale,RoundingMode.HALF_UP);
+        return sum.divide(new BigDecimal(count), scale,RoundingMode.HALF_UP);
         
     }
 

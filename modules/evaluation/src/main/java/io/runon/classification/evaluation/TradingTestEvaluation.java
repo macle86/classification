@@ -68,6 +68,10 @@ public class TradingTestEvaluation extends MultinomialEvaluation{
             jsonObject.addProperty("name", name);
         }
 
+        if(length() == 0){
+            return jsonObject;
+        }
+
         if(tradingEvaluation.length() == 0 && testEvaluation.length() == 0){
             return jsonObject;
         }
