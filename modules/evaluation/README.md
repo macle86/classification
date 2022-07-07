@@ -6,6 +6,11 @@
 # 개발환경
 - open jdk 8
 
+# gradle
+implementation 'io.runon.classification:classification-evaluation:0.0.1'
+- etc
+  - https://mvnrepository.com/artifact/io.runon.classification/classification-evaluation/0.0.1
+
 # communication
 ### blog, homepage
 - [www.seomse.com](https://www.seomse.com/)
