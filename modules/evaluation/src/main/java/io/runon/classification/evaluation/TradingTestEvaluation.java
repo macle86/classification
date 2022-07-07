@@ -48,7 +48,7 @@ public class TradingTestEvaluation extends MultinomialEvaluation{
             copy[i].setId(evaluations[i].getId());
             copy[i].setName(evaluations[i].getName());
         }
-        return evaluations;
+        return copy;
     }
 
     public void add(boolean isTrading, String classificationId, String trueId ){
@@ -115,7 +115,7 @@ public class TradingTestEvaluation extends MultinomialEvaluation{
             if(evaluations[i].length() ==0){
                 continue;
             }
-            evaluations[i].setJsonObject(total);
+            evaluations[i].setJsonObject(totalJson);
             evaluation.add("total", totalJson);
 
             if(tradingEvaluation.evaluations[i].length() > 0) {
