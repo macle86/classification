@@ -166,8 +166,17 @@ public class ClassificationEvaluation {
     }
 
     public BigDecimal f1Score(){
+
+        if(tp == 0){
+            return BigDecimal.ZERO;
+        }
+
         BigDecimal precision = new BigDecimal(tp).divide(new BigDecimal(tp+fp), MathContext.DECIMAL128);
         BigDecimal recall = new BigDecimal(tp).divide(new BigDecimal(tp+fn),scale, RoundingMode.HALF_UP);
+
+        if(recall.compareTo(BigDecimal.ZERO) ==0){
+            return BigDecimal.ZERO;
+        }
 
         BigDecimal up = precision.multiply(recall);
         BigDecimal down = precision.add(recall);
@@ -179,6 +188,9 @@ public class ClassificationEvaluation {
      * Precision : 정밀도, 예측한 정답 중 실제 정답인 것
      */
     public BigDecimal precision(){
+        if(tp == 0){
+            return BigDecimal.ZERO;
+        }
         return new BigDecimal(tp).divide(new BigDecimal(tp+fp),scale, RoundingMode.HALF_UP).stripTrailingZeros();
     }
 
@@ -188,6 +200,9 @@ public class ClassificationEvaluation {
      *
      */
     public BigDecimal recall(){
+        if(tp == 0){
+            return BigDecimal.ZERO;
+        }
         return new BigDecimal(tp).divide(new BigDecimal(tp+fn),scale, RoundingMode.HALF_UP).stripTrailingZeros();
     }
 

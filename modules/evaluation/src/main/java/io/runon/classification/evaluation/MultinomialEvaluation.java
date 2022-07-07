@@ -131,10 +131,21 @@ public class MultinomialEvaluation {
             if(evaluation.length() ==0){
                 continue;
             }
+
             count++;
+
+            if(evaluation.tp == 0){
+                continue;
+            }
+
             precisionSum = precisionSum.add(new BigDecimal(evaluation.tp).divide(new BigDecimal(evaluation.tp+evaluation.fp), MathContext.DECIMAL128));
-            recallSum = recallSum.add(new BigDecimal(evaluation.tp).divide(new BigDecimal(evaluation.tp+evaluation.fn),scale, RoundingMode.HALF_UP));
+            recallSum = recallSum.add(new BigDecimal(evaluation.tp).divide(new BigDecimal(evaluation.tp+evaluation.fn), MathContext.DECIMAL128));
         }
+
+        if(recallSum.compareTo(BigDecimal.ZERO) == 0 ){
+            return BigDecimal.ZERO;
+        }
+
         BigDecimal length = new BigDecimal(count);
 
         //평균
@@ -197,8 +208,6 @@ public class MultinomialEvaluation {
 
         return jsonObject;
     }
-
-
 
     public void setJsonObject(JsonObject jsonObject ){
         jsonObject.addProperty("length", length());

@@ -27,6 +27,20 @@ public class TradingTestEvaluation extends MultinomialEvaluation{
        testEvaluation.setScale(scale);
     }
 
+    @Override
+    public void setId(String id) {
+        this.id = id;
+        tradingEvaluation.setId(id);
+        testEvaluation.setId(id);
+    }
+
+    @Override
+    public void setName(String name) {
+        this.name = name;
+        tradingEvaluation.setName(name);
+        testEvaluation.setName(name);
+    }
+
     private ClassificationEvaluation [] copy(ClassificationEvaluation [] evaluations){
         ClassificationEvaluation [] copy = new ClassificationEvaluation[evaluations.length];
         for (int i = 0; i <copy.length ; i++) {
