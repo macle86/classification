@@ -164,11 +164,18 @@ public class MultinomialEvaluation {
         if(name != null){
             jsonObject.addProperty("name", name);
         }
+        if(length()  == 0){
+            return jsonObject;
+        }
+
         setJsonObject(jsonObject);
 
         JsonArray array = new JsonArray();
         for(ClassificationEvaluation evaluation :evaluations){
-            array.add(evaluation.toJsonObject());
+            if(evaluation.length() > 0){
+                array.add(evaluation.toJsonObject());
+            }
+
         }
 
         jsonObject.add("evaluations", array);
@@ -180,6 +187,7 @@ public class MultinomialEvaluation {
 
     public void setJsonObject(JsonObject jsonObject ){
         jsonObject.addProperty("length", length());
+        jsonObject.addProperty("simple_accuracy", new BigDecimal(getPositive()).divide(new BigDecimal(length()),scale, RoundingMode.HALF_UP).stripTrailingZeros());
         jsonObject.addProperty("accuracy", accuracy());
         jsonObject.addProperty("f1_score", f1Score());
         jsonObject.addProperty("geometric_mean", geometricMean());

@@ -93,16 +93,24 @@ public class TradingTestEvaluation extends MultinomialEvaluation{
         for (int i = 0; i <evaluations.length ; i++) {
             JsonObject evaluation = new JsonObject();
             JsonObject totalJson = new JsonObject();
+
+            if(evaluations[i].length() ==0){
+                continue;
+            }
             evaluations[i].setJsonObject(total);
             evaluation.add("total", totalJson);
 
-            JsonObject tradingJson = new JsonObject();
-            tradingEvaluation.evaluations[i].setJsonObject(tradingJson);
-            evaluation.add("trading", tradingJson);
+            if(tradingEvaluation.evaluations[i].length() > 0) {
+                JsonObject tradingJson = new JsonObject();
+                tradingEvaluation.evaluations[i].setJsonObject(tradingJson);
+                evaluation.add("trading", tradingJson);
+            }
 
-            JsonObject testJson = new JsonObject();
-            testEvaluation.evaluations[i].setJsonObject(testJson);
-            evaluation.add("test", testJson);
+            if(testEvaluation.evaluations[i].length() > 0) {
+                JsonObject testJson = new JsonObject();
+                testEvaluation.evaluations[i].setJsonObject(testJson);
+                evaluation.add("test", testJson);
+            }
 
 
             array.add(evaluation);

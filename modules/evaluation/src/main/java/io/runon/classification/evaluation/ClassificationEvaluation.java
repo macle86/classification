@@ -224,6 +224,9 @@ public class ClassificationEvaluation {
         if(name != null){
             jsonObject.addProperty("name", name);
         }
+        if(length() == 0){
+            return jsonObject;
+        }
 
         setJsonObject(jsonObject);
         return jsonObject;
