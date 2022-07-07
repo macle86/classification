@@ -27,6 +27,20 @@ public class TradingTestEvaluation extends MultinomialEvaluation{
        testEvaluation.setScale(scale);
     }
 
+    @Override
+    public void setId(String id) {
+        this.id = id;
+        tradingEvaluation.setId(id);
+        testEvaluation.setId(id);
+    }
+
+    @Override
+    public void setName(String name) {
+        this.name = name;
+        tradingEvaluation.setName(name);
+        testEvaluation.setName(name);
+    }
+
     private ClassificationEvaluation [] copy(ClassificationEvaluation [] evaluations){
         ClassificationEvaluation [] copy = new ClassificationEvaluation[evaluations.length];
         for (int i = 0; i <copy.length ; i++) {
@@ -68,6 +82,10 @@ public class TradingTestEvaluation extends MultinomialEvaluation{
             jsonObject.addProperty("name", name);
         }
 
+        if(length() == 0){
+            return jsonObject;
+        }
+
         if(tradingEvaluation.length() == 0 && testEvaluation.length() == 0){
             return jsonObject;
         }
@@ -93,16 +111,24 @@ public class TradingTestEvaluation extends MultinomialEvaluation{
         for (int i = 0; i <evaluations.length ; i++) {
             JsonObject evaluation = new JsonObject();
             JsonObject totalJson = new JsonObject();
+
+            if(evaluations[i].length() ==0){
+                continue;
+            }
             evaluations[i].setJsonObject(total);
             evaluation.add("total", totalJson);
 
-            JsonObject tradingJson = new JsonObject();
-            tradingEvaluation.evaluations[i].setJsonObject(tradingJson);
-            evaluation.add("trading", tradingJson);
+            if(tradingEvaluation.evaluations[i].length() > 0) {
+                JsonObject tradingJson = new JsonObject();
+                tradingEvaluation.evaluations[i].setJsonObject(tradingJson);
+                evaluation.add("trading", tradingJson);
+            }
 
-            JsonObject testJson = new JsonObject();
-            testEvaluation.evaluations[i].setJsonObject(testJson);
-            evaluation.add("test", testJson);
+            if(testEvaluation.evaluations[i].length() > 0) {
+                JsonObject testJson = new JsonObject();
+                testEvaluation.evaluations[i].setJsonObject(testJson);
+                evaluation.add("test", testJson);
+            }
 
 
             array.add(evaluation);

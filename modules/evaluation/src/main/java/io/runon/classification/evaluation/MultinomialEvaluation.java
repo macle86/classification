@@ -90,7 +90,6 @@ public class MultinomialEvaluation {
         return n;
     }
 
-
     public String getId() {
         return id;
     }
@@ -109,25 +108,45 @@ public class MultinomialEvaluation {
 
     public BigDecimal accuracy(){
 
+        int count = 0;
 
         BigDecimal sum = BigDecimal.ZERO;
         for(ClassificationEvaluation evaluation :evaluations){
+            if(evaluation.length() == 0){
+                continue;
+            }
+            count++;
             sum = sum.add(evaluation.accuracy());
         }
-        return sum.divide(new BigDecimal(evaluations.length), scale,RoundingMode.HALF_UP);
+        return sum.divide(new BigDecimal(count), scale,RoundingMode.HALF_UP);
 
     }
 
     public BigDecimal f1Score(){
-
+        int count = 0;
         BigDecimal precisionSum = BigDecimal.ZERO;
         BigDecimal recallSum = BigDecimal.ZERO;
 
         for(ClassificationEvaluation evaluation :evaluations){
+            if(evaluation.length() ==0){
+                continue;
+            }
+
+            count++;
+
+            if(evaluation.tp == 0){
+                continue;
+            }
+
             precisionSum = precisionSum.add(new BigDecimal(evaluation.tp).divide(new BigDecimal(evaluation.tp+evaluation.fp), MathContext.DECIMAL128));
-            recallSum = recallSum.add(new BigDecimal(evaluation.tp).divide(new BigDecimal(evaluation.tp+evaluation.fn),scale, RoundingMode.HALF_UP));
+            recallSum = recallSum.add(new BigDecimal(evaluation.tp).divide(new BigDecimal(evaluation.tp+evaluation.fn), MathContext.DECIMAL128));
         }
-        BigDecimal length = new BigDecimal(evaluations.length);
+
+        if(recallSum.compareTo(BigDecimal.ZERO) == 0 ){
+            return BigDecimal.ZERO;
+        }
+
+        BigDecimal length = new BigDecimal(count);
 
         //평균
         BigDecimal precision = precisionSum.divide(length, MathContext.DECIMAL128);
@@ -141,12 +160,19 @@ public class MultinomialEvaluation {
 
 
     public BigDecimal geometricMean(){
-    
+
+        int count = 0;
+
         BigDecimal sum = BigDecimal.ZERO;
         for(ClassificationEvaluation evaluation :evaluations){
+            if(evaluation.length() ==0){
+                continue;
+            }
+
+            count++;
             sum = sum.add(evaluation.geometricMean());
         }
-        return sum.divide(new BigDecimal(evaluations.length), scale,RoundingMode.HALF_UP);
+        return sum.divide(new BigDecimal(count), scale,RoundingMode.HALF_UP);
         
     }
 
@@ -164,11 +190,18 @@ public class MultinomialEvaluation {
         if(name != null){
             jsonObject.addProperty("name", name);
         }
+        if(length()  == 0){
+            return jsonObject;
+        }
+
         setJsonObject(jsonObject);
 
         JsonArray array = new JsonArray();
         for(ClassificationEvaluation evaluation :evaluations){
-            array.add(evaluation.toJsonObject());
+            if(evaluation.length() > 0){
+                array.add(evaluation.toJsonObject());
+            }
+
         }
 
         jsonObject.add("evaluations", array);
@@ -176,10 +209,9 @@ public class MultinomialEvaluation {
         return jsonObject;
     }
 
-
-
     public void setJsonObject(JsonObject jsonObject ){
         jsonObject.addProperty("length", length());
+        jsonObject.addProperty("simple_accuracy", new BigDecimal(getPositive()).divide(new BigDecimal(length()),scale, RoundingMode.HALF_UP).stripTrailingZeros());
         jsonObject.addProperty("accuracy", accuracy());
         jsonObject.addProperty("f1_score", f1Score());
         jsonObject.addProperty("geometric_mean", geometricMean());
