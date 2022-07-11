@@ -8,7 +8,7 @@
 
 # 모듈구성
 ## 분류평가
-implementation 'io.runon.classification:classification-evaluation:0.0.2'
+implementation 'io.runon.classification:classification-evaluation:0.0.3'
 
 # communication
 ### blog, homepage

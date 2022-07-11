@@ -7,9 +7,9 @@
 - open jdk 8
 
 # gradle
-implementation 'io.runon.classification:classification-evaluation:0.0.2'
+implementation 'io.runon.classification:classification-evaluation:0.0.3'
 - etc
-  - https://mvnrepository.com/artifact/io.runon.classification/classification-evaluation/0.0.2
+  - https://mvnrepository.com/artifact/io.runon.classification/classification-evaluation/0.0.3
 
 # communication
 ### blog, homepage
