@@ -177,6 +177,9 @@ public class MultinomialEvaluation {
             count++;
             sum = sum.add(evaluation.geometricMean());
         }
+        if(count == 0){
+            return BigDecimal.ZERO;
+        }
         return sum.divide(new BigDecimal(count), scale,RoundingMode.HALF_UP);
         
     }
