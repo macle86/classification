@@ -6,6 +6,10 @@
 # 개발환경
 - open jdk 8
 
+# 모듈구성
+## 분류평가
+implementation 'io.runon.classification:classification-evaluation:0.0.2'
+
 # communication
 ### blog, homepage
 - [www.seomse.com](https://www.seomse.com/)
