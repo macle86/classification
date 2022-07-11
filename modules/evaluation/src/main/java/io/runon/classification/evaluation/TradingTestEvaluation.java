@@ -115,6 +115,13 @@ public class TradingTestEvaluation extends MultinomialEvaluation{
             if(evaluations[i].length() ==0){
                 continue;
             }
+            if(evaluations[i].id != null){
+                totalJson.addProperty("id",evaluations[i].id);
+            }
+            if(evaluations[i].name != null){
+                totalJson.addProperty("name", evaluations[i].name);
+            }
+
             evaluations[i].setJsonObject(totalJson);
             evaluation.add("total", totalJson);
 
