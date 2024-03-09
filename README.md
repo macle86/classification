@@ -10,7 +10,7 @@
 ## 분류평가
 implementation 'io.runon.classification:classification-evaluation:0.0.3'
 
-## communication
+# communication
 ### blog, homepage
 - [github.com/runonio](https://github.com/runonio)
 - [runon.io](https://runon.io)
